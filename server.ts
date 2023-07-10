@@ -33,6 +33,23 @@ app.post('/api/user/1', (req, res) => {
 })
 
 
+// We can create multiple rule for different api, 
+// below rule only allow user to create account 5 times within 1 hour from same IP address
+const createAccountLimiter = rateLimit({
+	windowMs: 60 * 60 * 1000, // 1 hour
+	max: 5, // Limit each IP to 5 create account requests per `window` (here, per hour)
+	message:
+		'Too many accounts created from this IP, please try again after an hour',
+	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+})
+
+app.post('/create-account', createAccountLimiter, (req, res) => {
+    res.json("account created");
+})
+
+
+
 app.listen(3000, () => {
     console.log("Server is Successfully Running, and App is listening on port "+ 3000)
 });
